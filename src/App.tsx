@@ -348,8 +348,182 @@ const InteractiveBio: FC = () => {
   );
 };
 
+const SkillBar: FC<{ label: string; value: number; delay: number }> = ({ label, value, delay }) => {
+  const [currentValue, setCurrentValue] = useState(0);
+  
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCurrentValue(value);
+    }, delay * 1000);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return (
+    <div className="space-y-1">
+      <div className="flex justify-between text-[10px] font-mono font-bold uppercase tracking-tight">
+        <span className="text-black/60">{label}</span>
+        <span className="text-accent font-black">[{currentValue}]</span>
+      </div>
+      <div className="h-2 bg-zinc-800/20 retro-inset overflow-hidden">
+        <motion.div 
+          initial={{ width: 0 }}
+          animate={{ width: `${(currentValue / 120) * 100}%` }}
+          transition={{ duration: 1.5, ease: "easeOut", delay: delay }}
+          className="h-full bg-accent shadow-[0_0_10px_rgba(0,255,0,0.5)]"
+        />
+      </div>
+    </div>
+  );
+};
+
+const AvatarCard: FC = () => {
+  const [showHint, setShowHint] = useState(false);
+
+  return (
+    <div className="relative w-full aspect-[3/4] retro-window bg-zinc-900 overflow-hidden group">
+      {/* Pentominoes Background */}
+      <div className="absolute inset-0 opacity-10 pointer-events-none">
+        <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <pattern id="pentomino" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
+            <path d="M0 0h5v5H0zM5 5h5v5H5z" fill="currentColor" className="text-accent" />
+          </pattern>
+          <rect width="100%" height="100%" fill="url(#pentomino)" />
+        </svg>
+      </div>
+      
+      {/* CRT Effects */}
+      <div className="absolute inset-0 scanline opacity-30 z-20 pointer-events-none" />
+      <div className="absolute inset-0 scanline-move opacity-20 z-20 pointer-events-none" />
+      
+      {/* S+ Badge */}
+      <motion.div 
+        onMouseEnter={() => setShowHint(true)}
+        onMouseLeave={() => setShowHint(false)}
+        whileHover={{ scale: 1.1, rotate: 5 }}
+        className="absolute top-2 left-2 z-30 cursor-help"
+      >
+        <div className="w-10 h-10 bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-700 rounded-sm flex items-center justify-center shadow-[2px_2px_0_black] border border-white/50">
+          <span className="text-white font-black text-xl italic drop-shadow-[1px_1px_0_black]">S+</span>
+        </div>
+        
+        <AnimatePresence>
+          {showHint && (
+            <motion.div 
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 20 }}
+              exit={{ opacity: 0, x: 10 }}
+              className="absolute left-full top-0 ml-2 w-48 p-2 bg-white retro-window shadow-xl z-50 pointer-events-none"
+            >
+              <div className="flex items-center gap-2 mb-1 border-b border-zinc-200 pb-1">
+                <Bot className="w-3 h-3 text-blue-600" />
+                <span className="text-[8px] font-bold uppercase text-zinc-500">AI_Assistant:</span>
+              </div>
+              <p className="text-[10px] font-bold text-black leading-tight">
+                Jolin 的核心模組，已達到最高迭代級別。
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* Avatar Image */}
+      <div className="absolute inset-0 flex items-center justify-center p-4">
+        <img 
+          src={PERSONAL_INFO.avatar} 
+          alt="Avatar" 
+          className="w-full h-full object-cover pixelated opacity-90 group-hover:opacity-100 transition-opacity"
+          referrerPolicy="no-referrer"
+        />
+      </div>
+
+      {/* Bottom Label */}
+      <div className="absolute bottom-0 left-0 right-0 bg-accent/90 py-1 text-center">
+        <span className="text-[10px] font-black text-black uppercase tracking-widest">[數位雙生模組]</span>
+      </div>
+    </div>
+  );
+};
+
+const GrowthPuzzle: FC<{ onUnlock: (id: string) => void }> = ({ onUnlock }) => {
+  const [unlocked, setUnlocked] = useState<Record<string, boolean>>({});
+  
+  const blocks = [
+    { id: 'skill1', x: 20, y: 10, color: "#3b82f6", shape: [[1,1], [1,0]], label: "學習模組" },
+    { id: 'skill2', x: 120, y: 30, color: "#ef4444", shape: [[1,1,1]], label: "資安模組" },
+  ];
+
+  const handleDragEnd = (id: string, info: any) => {
+    // If dragged far enough to the right, consider it "slotted"
+    if (info.offset.x > 150) {
+      setUnlocked(prev => ({ ...prev, [id]: true }));
+      onUnlock(id);
+    }
+  };
+
+  return (
+    <div className="h-48 retro-inset bg-zinc-900/5 relative p-4 overflow-hidden mb-6">
+      <div className="absolute top-2 right-2 text-[8px] font-bold text-zinc-400 uppercase">Growth_Logic_Debugger_v2.1</div>
+      
+      {/* Slots */}
+      <div className="absolute right-12 top-0 bottom-0 flex flex-col justify-around">
+        {blocks.map(block => (
+          <div key={block.id} className="w-24 h-12 border-2 border-dashed border-zinc-300 flex items-center justify-center bg-zinc-100/50">
+            <span className="text-[8px] font-bold text-zinc-400 uppercase">Slot_{block.id}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Blocks */}
+      {blocks.map((block) => (
+        <motion.div
+          key={block.id}
+          drag
+          dragMomentum={false}
+          onDragEnd={(_, info) => handleDragEnd(block.id, info)}
+          className={`absolute cursor-grab active:cursor-grabbing z-20 ${unlocked[block.id] ? "opacity-30 pointer-events-none" : ""}`}
+          style={{ left: block.x, top: block.y }}
+        >
+          <div className="grid gap-0.5" style={{ 
+            gridTemplateColumns: `repeat(${block.shape[0].length}, 16px)`,
+            gridTemplateRows: `repeat(${block.shape.length}, 16px)`
+          }}>
+            {block.shape.flat().map((cell, i) => (
+              <div 
+                key={i} 
+                className={`w-4 h-4 border border-black/20 shadow-sm ${cell ? "" : "opacity-0"}`}
+                style={{ backgroundColor: cell ? block.color : "transparent" }}
+              />
+            ))}
+          </div>
+          <div className="text-[8px] font-bold text-center mt-1 uppercase">{block.label}</div>
+        </motion.div>
+      ))}
+
+      <div className="absolute bottom-2 left-2 text-[8px] font-bold text-zinc-500 italic">
+        "Drag modules to their designated slots to initialize growth sequences."
+      </div>
+    </div>
+  );
+};
+
 const IdentityPropertiesWindow: FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
+  const [unlockedSkills, setUnlockedSkills] = useState<Record<string, boolean>>({});
+  
   if (!isOpen) return null;
+
+  const skills = [
+    { label: "AI 邏輯構建 (AI&ML)", value: 111 },
+    { label: "前/後端開發 (Full-Stack)", value: 109 },
+    { label: "資安思維 (Security Mindset)", value: 90 },
+    { label: "數據分析 (Data Analysis)", value: 110 },
+    { label: "介面邏輯 (UI/UX Logic)", value: 113 },
+    { label: "Python (AI & Data)", value: 111 },
+    { label: "Unity (Game & Simulation)", value: 110 },
+  ];
+
+  const handleUnlock = (id: string) => {
+    setUnlockedSkills(prev => ({ ...prev, [id]: true }));
+  };
 
   return (
     <motion.div 
@@ -358,22 +532,101 @@ const IdentityPropertiesWindow: FC<{ isOpen: boolean; onClose: () => void }> = (
       exit={{ opacity: 0, scale: 0.95 }}
       className="fixed inset-0 z-[1000] flex items-center justify-center p-4 pointer-events-none"
     >
-      <div className="max-w-2xl w-full retro-window pointer-events-auto shadow-2xl">
-        <div className="retro-title-bar flex justify-between items-center">
+      <div className="max-w-5xl w-full retro-window pointer-events-auto shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="retro-title-bar flex justify-between items-center shrink-0">
           <div className="flex items-center gap-2">
-            <FileText className="w-3 h-3 text-white" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-white">Identity_Properties.dll</span>
+            <Settings className="w-3 h-3 text-white" />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-white">Identity_Properties.dll (核心屬性)</span>
           </div>
           <button onClick={onClose} className="retro-panel px-2 py-0.5 text-[10px] font-bold hover:bg-zinc-300 active:bg-zinc-400">X</button>
         </div>
         
-        <div className="bg-[#c0c0c0] p-1">
-          <InteractiveBio />
+        <div className="bg-[#c0c0c0] p-6 md:p-8 overflow-y-auto custom-scrollbar-w95">
+          <div className="grid lg:grid-cols-12 gap-8">
+            {/* Left: Avatar Card */}
+            <div className="lg:col-span-3">
+              <AvatarCard />
+            </div>
+
+            {/* Middle: Stats */}
+            <div className="lg:col-span-5 space-y-6">
+              <div className="space-y-1">
+                <h3 className="text-xs font-black text-black uppercase tracking-widest">JolinOS Performance Log:</h3>
+                <p className="text-[10px] font-mono text-blue-800 font-bold">( LV. NEXT -{'>'} 80% to Success )</p>
+              </div>
+              <div className="space-y-4">
+                {skills.map((skill, i) => (
+                  <SkillBar key={skill.label} {...skill} delay={0.2 + i * 0.1} />
+                ))}
+              </div>
+            </div>
+
+            {/* Right: Traits & Persona */}
+            <div className="lg:col-span-4 space-y-8">
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 border-b border-black/10 pb-2">
+                  <Cpu className="w-4 h-4 text-zinc-600" />
+                  <span className="text-xs font-black uppercase tracking-widest text-zinc-600">驅動內核</span>
+                </div>
+                <div className="retro-inset bg-zinc-900 p-4 font-mono text-sm text-accent italic leading-relaxed">
+                  "System logic is my language,<br />
+                  and puzzles are my fuel."
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 border-b border-black/10 pb-2">
+                  <Activity className="w-4 h-4 text-zinc-600" />
+                  <span className="text-xs font-black uppercase tracking-widest text-zinc-600">特質標籤</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {["ENTP-A", "資安探索者", "AI 探索者", "UI 設計師"].map(tag => (
+                    <span key={tag} className="retro-badge !bg-blue-100 !text-blue-800 !border-blue-300">[{tag}]</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom: Unlocking Logic */}
+          <div className="mt-12 pt-8 border-t border-black/10 space-y-8">
+            <div className="flex items-center gap-4">
+              <div className="h-[1px] flex-1 bg-zinc-300" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-400">Unlocking_Logic</span>
+              <div className="h-[1px] flex-1 bg-zinc-300" />
+            </div>
+
+            <GrowthPuzzle onUnlock={handleUnlock} />
+
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className={`space-y-3 transition-all duration-500 ${unlockedSkills.skill1 ? "opacity-100" : "opacity-20 blur-sm grayscale"}`}>
+                <div className="flex items-center gap-2 text-blue-800">
+                  <Zap className="w-4 h-4" />
+                  <span className="text-xs font-black uppercase">[輔助技能 I] &gt; 主動學習 解鎖!</span>
+                </div>
+                <div className="retro-inset bg-white p-4 text-[11px] leading-relaxed text-zinc-700 font-medium min-h-[80px]">
+                  {unlockedSkills.skill1 && (
+                    <DecryptText text="當偵測到未知領域時，系統會從「被動輸入」轉向「主動設計學習」，以 50% 的速度加載新架構。(AI 啟蒙的邏輯重組)" />
+                  )}
+                </div>
+              </div>
+              <div className={`space-y-3 transition-all duration-500 ${unlockedSkills.skill2 ? "opacity-100" : "opacity-20 blur-sm grayscale"}`}>
+                <div className="flex items-center gap-2 text-red-800">
+                  <Shield className="w-4 h-4" />
+                  <span className="text-xs font-black uppercase">[主要技能 II] &gt; 資安重構 解鎖!</span>
+                </div>
+                <div className="retro-inset bg-white p-4 text-[11px] leading-relaxed text-zinc-700 font-medium min-h-[80px]">
+                  {unlockedSkills.skill2 && (
+                    <DecryptText text="針對系統漏洞，運用 RAG 技術與系統思維進行多維度拆解，確保核心穩定。若失敗，則產生 Bug 修復 Log 並迭代優化。(資安與系統的獵人)" />
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="p-2 bg-[#c0c0c0] flex justify-end gap-2 border-t border-zinc-400">
-          <button onClick={onClose} className="retro-panel px-6 py-1 text-[10px] font-bold hover:bg-zinc-300">確定</button>
-          <button onClick={onClose} className="retro-panel px-6 py-1 text-[10px] font-bold hover:bg-zinc-300">取消</button>
+        <div className="p-4 bg-[#c0c0c0] flex justify-end gap-2 border-t border-zinc-400 shrink-0">
+          <button onClick={onClose} className="retro-panel px-8 py-1.5 text-xs font-bold hover:bg-zinc-300">確定</button>
         </div>
       </div>
     </motion.div>
@@ -385,11 +638,19 @@ const Player = ReactPlayer as any;
 const FileManagerWindow: FC<{ 
   isOpen: boolean; 
   onClose: () => void; 
-  onSelectProject: (p: typeof PROJECTS[0]) => void 
-}> = ({ isOpen, onClose, onSelectProject }) => {
+  onSelectProject: (p: typeof PROJECTS[0]) => void;
+  preSelectedProject?: typeof PROJECTS[0] | null;
+}> = ({ isOpen, onClose, onSelectProject, preSelectedProject }) => {
   const [hoveredProject, setHoveredProject] = useState<typeof PROJECTS[0] | null>(null);
   const [selectedFolder, setSelectedFolder] = useState<string>("Selected_Featured");
   
+  useEffect(() => {
+    if (preSelectedProject) {
+      setHoveredProject(preSelectedProject);
+      setSelectedFolder(preSelectedProject.folder || "Selected_Featured");
+    }
+  }, [preSelectedProject, isOpen]);
+
   if (!isOpen) return null;
 
   const folders = [
@@ -1627,7 +1888,7 @@ export default function App() {
     { 
       role: "bot", 
       content: "我是家羚的數位雙生，你想先了解她的：",
-      options: ["1. 許家羚的故事", "2. 創作作品", "3. 技能？"]
+      options: ["1. 許家羚的故事", "2. 創作作品", "3. 系統效能監測 (System Monitor)"]
     }
   ]);
   const [input, setInput] = useState("");
@@ -1694,12 +1955,12 @@ export default function App() {
       return;
     }
 
-    if (userMsg.includes("3. 技能？")) {
-      setOpLogs(prev => [...prev, "User selected 'Skills'. Launching System_Monitor.exe..."]);
+    if (userMsg.includes("3. 系統效能監測 (System Monitor)")) {
+      setOpLogs(prev => [...prev, "User selected 'Performance'. Launching Identity_Properties.dll..."]);
       setIsChatOpen(false);
       setTimeout(() => {
-        setIsMonitorOpen(true);
-        setOpLogs(prev => [...prev, "System_Monitor.exe active."]);
+        setIsAboutOpen(true);
+        setOpLogs(prev => [...prev, "Identity_Properties.dll active."]);
       }, 800);
       return;
     }
@@ -1804,12 +2065,13 @@ export default function App() {
         <AnimatePresence>
           <FileManagerWindow 
             isOpen={isGalleryOpen} 
+            preSelectedProject={selectedProject}
             onClose={() => {
               setIsGalleryOpen(false);
               setMessages(prev => [...prev, { 
                 role: "bot", 
                 content: "看完這些作品後，你或許會對家羚的邏輯世界 (故事) 好奇，或者想直接確認她的系統參數 (技能)？",
-                options: ["1. 許家羚的故事", "3. 技能？"]
+                options: ["1. 許家羚的故事", "3. 系統效能監測 (System Monitor)"]
               }]);
               setIsChatOpen(true);
             }} 

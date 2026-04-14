@@ -3,7 +3,7 @@ export const PERSONAL_INFO = {
   role: "Freshman EECS Student & Creative Developer",
   tagline: "Jolin Hsu — Freshman EECS Student & Creative Developer.",
   hook: "I didn’t plan this path. But I found it by solving problems.",
-  avatar: "https://picsum.photos/seed/jolin/200/200?grayscale",
+  avatar: "https://api.dicebear.com/7.x/pixel-art/svg?seed=short-black-hair-girl&backgroundColor=b6e3f4",
 };
 
 export const ABOUT_ME = {

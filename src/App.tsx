@@ -369,7 +369,7 @@ const SkillBar: FC<{ label: string; value: number; delay: number }> = ({ label, 
           initial={{ width: 0 }}
           animate={{ width: `${(currentValue / 120) * 100}%` }}
           transition={{ duration: 1.5, ease: "easeOut", delay: delay }}
-          className="h-full bg-accent shadow-[0_0_10px_rgba(0,255,0,0.5)]"
+          className="h-full bg-accent shadow-[0_0_15px_rgba(255,215,0,0.6)]"
         />
       </div>
     </div>
@@ -427,11 +427,11 @@ const AvatarCard: FC = () => {
       </motion.div>
 
       {/* Avatar Image */}
-      <div className="absolute inset-0 flex items-center justify-center p-4">
+      <div className="absolute inset-0 flex items-center justify-center p-4 bg-zinc-800/50">
         <img 
           src={PERSONAL_INFO.avatar} 
           alt="Avatar" 
-          className="w-full h-full object-cover pixelated opacity-90 group-hover:opacity-100 transition-opacity"
+          className="w-full h-full object-contain pixelated opacity-90 group-hover:opacity-100 transition-opacity drop-shadow-[0_0_15px_rgba(255,215,0,0.3)]"
           referrerPolicy="no-referrer"
         />
       </div>
@@ -568,7 +568,7 @@ const IdentityPropertiesWindow: FC<{ isOpen: boolean; onClose: () => void }> = (
                   <Cpu className="w-4 h-4 text-zinc-600" />
                   <span className="text-xs font-black uppercase tracking-widest text-zinc-600">驅動內核</span>
                 </div>
-                <div className="retro-inset bg-zinc-900 p-4 font-mono text-sm text-accent italic leading-relaxed">
+                <div className="retro-inset bg-zinc-900 p-4 font-mono text-sm text-accent italic leading-relaxed shadow-[inset_0_0_20px_rgba(255,215,0,0.1)]">
                   "System logic is my language,<br />
                   and puzzles are my fuel."
                 </div>
@@ -1504,13 +1504,14 @@ const IdentityLabel: FC<{ desktopRef: React.RefObject<HTMLDivElement | null> }> 
       drag
       dragConstraints={desktopRef}
       dragMomentum={false}
-      initial={{ x: "calc(50vw - 144px)", y: "calc(50vh - 200px)", rotate: 0 }}
-      className="absolute z-30 w-72 p-6 shadow-lg cursor-grab active:cursor-grabbing select-none"
+      initial={{ x: "calc(50vw - 144px)", y: 150, rotate: 0 }}
       style={{ 
+        rotate: 0,
         backgroundColor: "#fdfdfd",
         boxShadow: "3px 3px 10px rgba(0,0,0,0.1)",
         border: "1px solid #e5e5e5"
       }}
+      className="absolute z-30 w-72 p-6 cursor-grab active:cursor-grabbing select-none post-it-note"
     >
       <div className="space-y-4">
         <div className="font-mono font-black text-xs text-zinc-400 tracking-widest border-b border-zinc-100 pb-1">
@@ -1545,12 +1546,13 @@ const StickyNote: FC<{ onGeminiClick: () => void; desktopRef: React.RefObject<HT
       drag
       dragConstraints={desktopRef}
       dragMomentum={false}
-      initial={{ x: "calc(100vw - 280px)", y: 20, rotate: 2 }}
-      className="absolute z-40 w-56 p-6 shadow-xl cursor-grab active:cursor-grabbing select-none"
+      initial={{ x: "calc(100vw - 280px)", y: 32, rotate: 2 }}
       style={{ 
+        rotate: 2,
         backgroundColor: "#FFFF88",
         boxShadow: "5px 5px 15px rgba(0,0,0,0.2)",
       }}
+      className="absolute z-40 w-56 p-6 cursor-grab active:cursor-grabbing select-none post-it-note"
     >
       {/* Virtual Tape */}
       <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-8 bg-white/30 backdrop-blur-[1px] rotate-[-1deg] border border-white/20" />

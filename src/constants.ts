@@ -48,10 +48,14 @@ export const PROJECTS = [
     outcome: "Boutique aesthetic meets AI-driven personalization.",
     tags: ["AI Integration", "Bento UI", "E-commerce"],
     image: "https://picsum.photos/seed/healthy-food/1200/800?grayscale",
-    video: "https://www.youtube.com/watch?v=7U08sXEPxx4",
+    video: "https://youtu.be/iPxUFb2UwS8?si=8gOhBqHJSnTeucWw",
     link: "https://dusky-delta.vercel.app",
     status: "Completed / Stable",
-    core: "AI 營養助手 + Bento UI"
+    core: "AI 營養助手 + Bento UI",
+    gallery: [
+      "https://picsum.photos/seed/aba-1/800/600?grayscale",
+      "https://picsum.photos/seed/aba-2/800/600?grayscale"
+    ]
   },
   {
     id: "02",
@@ -70,7 +74,11 @@ export const PROJECTS = [
     image: "https://picsum.photos/seed/mbti-ruby/1200/800?grayscale",
     link: "https://mbti-ruby.vercel.app",
     status: "Stable",
-    core: "Dynamic Transitions + Vercel"
+    core: "Dynamic Transitions + Vercel",
+    gallery: [
+      "https://picsum.photos/seed/mbti-1/800/600?grayscale",
+      "https://picsum.photos/seed/mbti-2/800/600?grayscale"
+    ]
   },
   {
     id: "03",
@@ -89,7 +97,11 @@ export const PROJECTS = [
     image: "https://picsum.photos/seed/cnn-ai/1200/800?grayscale",
     link: "https://github.com/cometjolin-cmyk/CNN_recongnition",
     status: "Research / Stable",
-    core: "Custom CNN Layers + Performance Analysis"
+    core: "Custom CNN Layers + Performance Analysis",
+    gallery: [
+      "https://picsum.photos/seed/cnn-1/800/600?grayscale",
+      "https://picsum.photos/seed/cnn-2/800/600?grayscale"
+    ]
   },
 ];
 

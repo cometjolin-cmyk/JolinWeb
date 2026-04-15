@@ -76,7 +76,7 @@ export const PROJECTS = [
     status: "Stable",
     core: "Dynamic Transitions + Vercel",
     gallery: [
-      "https://picsum.photos/seed/mbti-1/800/600?grayscale",
+      "https://i.ibb.co/vxMfwWhr/2026-04-15-11-02-11.png",
       "https://picsum.photos/seed/mbti-2/800/600?grayscale"
     ]
   },

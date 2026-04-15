@@ -1478,7 +1478,7 @@ const PortalIntro = ({
             >
               <div className="w-[400px] h-[300px] relative">
                 <img 
-                  src="https://picsum.photos/seed/retro-pc/800/600" 
+                  src="https://png.pngtree.com/thumb_back/fw800/background/20251217/pngtree-retro-crt-computer-monitor-on-a-plain-white-background-representing-old-image_20856979.webp" 
                   alt="Retro PC" 
                   className="w-full h-full object-contain filter drop-shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
                   referrerPolicy="no-referrer"

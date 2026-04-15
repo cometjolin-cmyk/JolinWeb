@@ -48,14 +48,14 @@ export const PROJECTS = [
     tools: ["React 18", "TypeScript", "Tailwind CSS", "Gemini API", "Recharts"],
     outcome: "Boutique aesthetic meets AI-driven personalization.",
     tags: ["AI Integration", "Bento UI", "E-commerce"],
-    image: "https://picsum.photos/seed/healthy-food/1200/800?grayscale",
+    image: "https://i.ibb.co/C5vFynb2/2026-04-15-4-22-17.png",
     video: undefined,
     link: "https://dusky-delta.vercel.app",
     status: "Completed / Stable",
     core: "AI 營養助手 + Bento UI",
     gallery: [
-      "https://picsum.photos/seed/aba-1/800/600?grayscale",
-      "https://picsum.photos/seed/aba-2/800/600?grayscale"
+      "https://i.ibb.co/bRbZmCJQ/2026-04-15-4-22-46.png",
+      "https://i.ibb.co/chPpk0B5/2026-04-15-4-23-13.png"
     ]
   },
   {
@@ -72,13 +72,13 @@ export const PROJECTS = [
     tools: ["Vercel", "JavaScript", "CSS Animations", "UI/UX Design"],
     outcome: "Enhanced user engagement through dynamic UI.",
     tags: ["UI/UX", "Vercel", "Analytics"],
-    image: "https://picsum.photos/seed/mbti-ruby/1200/800?grayscale",
+    image: "https://i.ibb.co/5hH2PmJT/2026-04-15-11-02-01.png",
     link: "https://mbti-ruby.vercel.app",
     status: "Stable",
     core: "Dynamic Transitions + Vercel",
     gallery: [
-      "https://picsum.photos/seed/mbti-1/800/600?grayscale",
-      "https://picsum.photos/seed/mbti-2/800/600?grayscale"
+      "https://i.ibb.co/vxMfwWhr/2026-04-15-11-02-11.png",
+      "https://i.ibb.co/mCZkTG3J/2026-04-15-11-03-00.png"
     ]
   },
   {
@@ -95,13 +95,13 @@ export const PROJECTS = [
     tools: ["Python", "TensorFlow/Keras", "NumPy", "Matplotlib"],
     outcome: "Solid technical foundation for deep learning applications.",
     tags: ["Deep Learning", "Computer Vision", "Python"],
-    image: "https://picsum.photos/seed/cnn-ai/1200/800?grayscale",
+    image: "https://i.ibb.co/N64gQdWK/2026-04-15-4-26-38.png",
     link: "https://github.com/cometjolin-cmyk/CNN_recongnition",
     status: "Research / Stable",
     core: "Custom CNN Layers + Performance Analysis",
     gallery: [
-      "https://picsum.photos/seed/cnn-1/800/600?grayscale",
-      "https://picsum.photos/seed/cnn-2/800/600?grayscale"
+      "https://i.ibb.co/jZzQXGMJ/2026-04-15-4-26-31.png",
+      "https://i.ibb.co/yFrZT0yc/2026-04-15-4-26-23.png"
     ]
   },
 ];

@@ -1476,19 +1476,7 @@ const PortalIntro = ({
               }}
               className="relative group"
             >
-            <div 
-            className="absolute overflow-hidden bg-black/95"
-              style={{ 
-    // 請調整以下數值，直到綠色方塊完美嵌入圖片的螢幕框
-    top: "21.5%",     // 垂直位置
-    left: "26.5%",    // 水平位置
-    width: "47%",      // 寬度
-    height: "41%",     // 高度
-    borderRadius: "2px",
-    boxShadow: "inset 0 0 10px rgba(0,255,0,0.2)", // 螢幕內發光
-    // 如果圖片有角度，可以嘗試取消註解下面這行進行微調
-    // transform: "perspective(500px) rotateY(-2deg)" 
-  }}
+           
 >
   <div className="scanline" />
   <div className="scanline-move" />

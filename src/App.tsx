@@ -1476,23 +1476,27 @@ const PortalIntro = ({
               }}
               className="relative group"
             >
-              <div className="w-[400px] h-[300px] relative">
-                <img 
-                  src="https://png.pngtree.com/thumb_back/fw800/background/20251217/pngtree-retro-crt-computer-monitor-on-a-plain-white-background-representing-old-image_20856979.webp" 
-                  alt="Retro PC" 
-                  className="w-full h-full object-contain filter drop-shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
-                  referrerPolicy="no-referrer"
-                />
-                
-                <div className="absolute top-[22%] left-[28%] w-[44%] h-[42%] bg-black/95 overflow-hidden">
-                  <div className="scanline" />
-                  <div className="scanline-move" />
-                  <div className="absolute inset-0 flex items-center justify-center flex-col gap-2">
-                    <div className="text-[10px] font-vt323 text-accent animate-pulse">JolinOS v2.6</div>
-                    <div className="w-2 h-2 bg-accent rounded-full animate-pulse shadow-[0_0_10px_rgba(0,255,0,1)]" />
-                  </div>
-                </div>
-              </div>
+            <div 
+            className="absolute overflow-hidden bg-black/95"
+              style={{ 
+    // 請調整以下數值，直到綠色方塊完美嵌入圖片的螢幕框
+    top: "21.5%",     // 垂直位置
+    left: "26.5%",    // 水平位置
+    width: "47%",      // 寬度
+    height: "41%",     // 高度
+    borderRadius: "2px",
+    boxShadow: "inset 0 0 10px rgba(0,255,0,0.2)", // 螢幕內發光
+    // 如果圖片有角度，可以嘗試取消註解下面這行進行微調
+    // transform: "perspective(500px) rotateY(-2deg)" 
+  }}
+>
+  <div className="scanline" />
+  <div className="scanline-move" />
+  <div className="absolute inset-0 flex items-center justify-center flex-col gap-2">
+    <div className="text-[10px] font-vt323 text-accent animate-pulse">JolinOS v2.6</div>
+    <div className="w-2 h-2 bg-accent rounded-full animate-pulse shadow-[0_0_10px_rgba(0,255,0,1)]" />
+  </div>
+</div>
             </motion.div>
 
             <motion.div 

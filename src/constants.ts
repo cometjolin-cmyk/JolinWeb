@@ -4,6 +4,7 @@ export const PERSONAL_INFO = {
   tagline: "Jolin Hsu — Freshman EECS Student & Creative Developer.",
   hook: "I didn’t plan this path. But I found it by solving problems.",
   avatar: "https://api.dicebear.com/7.x/pixel-art/svg?seed=short-black-hair-girl&backgroundColor=b6e3f4",
+  email: "comet.jolin@gmail.com",
 };
 
 export const ABOUT_ME = {
@@ -48,7 +49,7 @@ export const PROJECTS = [
     outcome: "Boutique aesthetic meets AI-driven personalization.",
     tags: ["AI Integration", "Bento UI", "E-commerce"],
     image: "https://picsum.photos/seed/healthy-food/1200/800?grayscale",
-    video: "https://youtu.be/iPxUFb2UwS8?si=8gOhBqHJSnTeucWw",
+    video: undefined,
     link: "https://dusky-delta.vercel.app",
     status: "Completed / Stable",
     core: "AI 營養助手 + Bento UI",

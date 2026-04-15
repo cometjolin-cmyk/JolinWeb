@@ -23,6 +23,7 @@ import {
   Mail,
   Monitor,
   Power,
+  Phone,
   Crosshair,
   Clock,
   MapPin,
@@ -937,27 +938,16 @@ const FileManagerWindow: FC<{
   preSelectedProject?: typeof PROJECTS[0] | null;
 }> = ({ isOpen, onClose, onSelectProject, preSelectedProject }) => {
   const [hoveredProject, setHoveredProject] = useState<typeof PROJECTS[0] | null>(null);
-  const [selectedFolder, setSelectedFolder] = useState<string>("Selected_Featured");
   
   useEffect(() => {
     if (preSelectedProject) {
       setHoveredProject(preSelectedProject);
-      setSelectedFolder(preSelectedProject.folder || "Selected_Featured");
     }
   }, [preSelectedProject, isOpen]);
 
   if (!isOpen) return null;
 
-  const folders = [
-    { name: "AI_Nutrition", id: "AI_Nutrition" },
-    { name: "UIUX_Lab", id: "UIUX_Lab" },
-    { name: "Deep_Learning", id: "Deep_Learning" },
-    { name: "Selected_Featured", id: "Selected_Featured" }
-  ];
-
-  const filteredProjects = selectedFolder === "Selected_Featured" 
-    ? PROJECTS 
-    : PROJECTS.filter(p => p.folder === selectedFolder);
+  const filteredProjects = PROJECTS;
 
   return (
     <motion.div 
@@ -970,7 +960,7 @@ const FileManagerWindow: FC<{
         <div className="retro-title-bar flex justify-between items-center">
           <div className="flex items-center gap-2">
             <HardDrive className="w-3 h-3 text-white" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-white">System_Explorer - C:\Users\Jolin\Projects\{selectedFolder}</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-white">System_Explorer - C:\Users\Jolin\Projects\Selected_Featured</span>
           </div>
           <div className="flex gap-1">
             <button className="retro-panel px-2 py-0.5 text-[10px] font-bold hover:bg-zinc-300">_</button>
@@ -980,27 +970,6 @@ const FileManagerWindow: FC<{
         </div>
 
         <div className="flex-1 flex overflow-hidden bg-white">
-          {/* Directory Tree */}
-          <div className="w-56 border-r border-zinc-300 bg-[#f0f0f0] p-2 overflow-y-auto custom-scrollbar">
-            <div className="flex items-center gap-1 mb-2">
-              <ChevronDown className="w-3 h-3" />
-              <Folder className="w-3 h-3 text-yellow-600" fill="currentColor" fillOpacity={0.2} />
-              <span className="text-[10px] font-bold">C:\Users\Jolin\Projects</span>
-            </div>
-            <div className="pl-4 space-y-1">
-              {folders.map(folder => (
-                <div 
-                  key={folder.id}
-                  onClick={() => setSelectedFolder(folder.id)}
-                  className={`flex items-center gap-1 px-1 cursor-pointer hover:bg-blue-100 ${selectedFolder === folder.id ? "bg-[#000080] text-white" : ""}`}
-                >
-                  <Folder className={`w-3 h-3 ${selectedFolder === folder.id ? "text-white" : "text-yellow-600"}`} fill="currentColor" fillOpacity={0.2} />
-                  <span className="text-[10px]">{folder.name}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* Main Content Area */}
           <div className="flex-1 flex flex-col overflow-hidden">
             <div className="h-8 bg-[#c0c0c0] border-b border-zinc-400 flex items-center px-2 gap-4">
@@ -1010,30 +979,31 @@ const FileManagerWindow: FC<{
               </div>
               <div className="flex-1 retro-inset bg-white px-2 py-0.5 text-[9px] flex items-center gap-2">
                 <HardDrive className="w-3 h-3 text-zinc-400" />
-                <span>C:\Users\Jolin\Projects\{selectedFolder}</span>
+                <span>C:\Users\Jolin\Projects\Selected_Featured</span>
               </div>
             </div>
 
             <div className="flex-1 flex overflow-hidden">
               {/* File List */}
-              <div className="flex-1 p-4 grid grid-cols-3 gap-6 overflow-y-auto custom-scrollbar bg-white">
+              <div className="flex-1 p-6 grid grid-cols-3 xl:grid-cols-4 gap-8 overflow-y-auto custom-scrollbar bg-white">
                 {filteredProjects.map((project) => (
                   <motion.div
                     key={project.id}
-                    whileHover={{ scale: 1.05 }}
+                    layoutId={`project-${project.id}`}
+                    whileHover={{ scale: 1.05, y: -5 }}
                     onMouseEnter={() => setHoveredProject(project)}
                     onDoubleClick={() => onSelectProject(project)}
-                    className="flex flex-col items-center gap-2 p-2 cursor-pointer group"
+                    className="flex flex-col items-center gap-3 p-3 cursor-pointer group"
                   >
-                    <div className="w-20 h-20 retro-inset p-1 bg-zinc-100 relative overflow-hidden flex items-center justify-center">
+                    <div className="w-full aspect-square retro-inset p-1 bg-zinc-100 relative overflow-hidden">
                       <div className="absolute inset-0 scanline opacity-10 z-10 pointer-events-none" />
-                      {project.filename.endsWith('.exe') ? (
-                        <Monitor className="w-12 h-12 text-zinc-400 group-hover:text-blue-600 transition-colors" />
-                      ) : (
-                        <FileCode className="w-12 h-12 text-zinc-400 group-hover:text-purple-600 transition-colors" />
-                      )}
+                      {/* 在圖標背景直接放一張微弱透明的專案縮圖，增加質感 */}
+                      <img src={project.image} className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-40 transition-opacity" referrerPolicy="no-referrer" />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Monitor className="w-16 h-16 text-zinc-400 group-hover:text-blue-600 transition-colors" />
+                      </div>
                     </div>
-                    <span className="text-[10px] font-bold text-center group-hover:bg-[#000080] group-hover:text-white px-1">
+                    <span className="text-[11px] font-black uppercase text-center group-hover:bg-[#000080] group-hover:text-white px-2 py-0.5">
                       {project.filename}
                     </span>
                   </motion.div>
@@ -1041,7 +1011,7 @@ const FileManagerWindow: FC<{
               </div>
 
               {/* Enhanced Preview Pane */}
-              <div className="w-80 border-l border-zinc-300 bg-[#f9f9f9] p-4 overflow-y-auto custom-scrollbar flex flex-col">
+              <div className="w-96 border-l border-zinc-300 bg-[#f9f9f9] p-6 overflow-y-auto custom-scrollbar flex flex-col">
                 <AnimatePresence mode="wait">
                   {hoveredProject ? (
                     <motion.div 
@@ -1049,7 +1019,7 @@ const FileManagerWindow: FC<{
                       initial={{ opacity: 0, x: 10 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 10 }}
-                      className="space-y-4 flex-1"
+                      className="space-y-6 flex-1"
                     >
                       <div className="aspect-video retro-inset overflow-hidden relative bg-black">
                         <div className="absolute inset-0 scanline opacity-30 z-20 pointer-events-none" />
@@ -1072,55 +1042,61 @@ const FileManagerWindow: FC<{
                         )}
                       </div>
                       
-                      <div className="space-y-3">
-                        <h4 className="text-[11px] font-black uppercase border-b border-zinc-300 pb-1 flex justify-between items-center">
+                      <div className="space-y-4">
+                        <h4 className="text-[13px] font-black uppercase border-b-2 border-zinc-300 pb-2 flex justify-between items-center">
                           {hoveredProject.title}
-                          <Badge className="text-[7px] h-4 bg-green-100 text-green-800 border-green-200">PROPS</Badge>
+                          <Badge className="text-[8px] h-5 bg-green-100 text-green-800 border-green-200">PROPS</Badge>
                         </h4>
                         
-                        <div className="space-y-1.5">
-                          <div className="flex justify-between text-[9px]">
-                            <span className="text-zinc-500 uppercase">Status:</span>
-                            <span className="font-bold text-green-600">{hoveredProject.status}</span>
+                        <div className="space-y-3">
+                          <div className="flex justify-between text-[10px]">
+                            <span className="text-zinc-500 uppercase font-bold">Status:</span>
+                            <span className="font-black text-green-600 uppercase">{hoveredProject.status}</span>
                           </div>
-                          <div className="flex flex-col gap-1">
-                            <span className="text-[9px] text-zinc-500 uppercase">Tech_Stack:</span>
-                            <div className="flex flex-wrap gap-1">
-                              {hoveredProject.tools.slice(0, 4).map(t => (
-                                <span key={t} className="text-[8px] bg-zinc-200 px-1 border border-zinc-300">{t}</span>
+                          
+                          <div className="flex flex-col gap-2">
+                            <span className="text-[10px] text-zinc-500 uppercase font-bold">Tech_Badge_Cloud:</span>
+                            <div className="flex flex-wrap gap-1.5">
+                              {hoveredProject.tools.map(t => (
+                                <span key={t} className="text-[9px] font-bold bg-blue-50 text-blue-700 px-2 py-0.5 border border-blue-100 rounded-sm">
+                                  {t}
+                                </span>
                               ))}
                             </div>
                           </div>
-                          <div className="flex flex-col gap-1">
-                            <span className="text-[9px] text-zinc-500 uppercase">Core_Module:</span>
-                            <span className="text-[9px] font-bold text-blue-800">{hoveredProject.core}</span>
+
+                          <div className="flex flex-col gap-1.5">
+                            <span className="text-[10px] text-zinc-500 uppercase font-bold">Core_Module:</span>
+                            <div className="p-2 bg-zinc-100 border border-zinc-200 rounded-sm">
+                              <span className="text-[10px] font-bold text-zinc-800 leading-tight">{hoveredProject.core}</span>
+                            </div>
                           </div>
                         </div>
                       </div>
 
-                      <div className="mt-auto pt-4 border-t border-zinc-200 space-y-4">
+                      <div className="mt-auto pt-6 border-t border-zinc-200 space-y-4">
                         <div className="flex items-center gap-2">
                           <motion.div 
                             animate={{ opacity: [1, 0, 1] }}
                             transition={{ duration: 0.8, repeat: Infinity }}
-                            className="w-1.5 h-3 bg-zinc-800"
+                            className="w-2 h-4 bg-zinc-800"
                           />
-                          <span className="text-[9px] font-bold text-zinc-600 italic">
-                            {">"} Click to expand details_
+                          <span className="text-[10px] font-black text-zinc-600 italic uppercase">
+                            {">"} Double-click to expand_
                           </span>
                         </div>
                         <button 
                           onClick={() => onSelectProject(hoveredProject)}
-                          className="retro-panel w-full py-2 bg-[#000080] text-white text-[10px] font-bold uppercase tracking-widest hover:bg-blue-800"
+                          className="retro-panel w-full py-3 bg-[#000080] text-white text-[11px] font-black uppercase tracking-[0.2em] hover:bg-blue-800 shadow-lg"
                         >
-                          OPEN_FILE
+                          OPEN_FILE.EXE
                         </button>
                       </div>
                     </motion.div>
                   ) : (
-                    <div className="h-full flex flex-col items-center justify-center text-zinc-300 space-y-2">
-                      <FolderSearch className="w-12 h-12" />
-                      <span className="text-[10px] font-bold uppercase">Select_a_Project</span>
+                    <div className="h-full flex flex-col items-center justify-center text-zinc-300 space-y-4">
+                      <FolderSearch className="w-16 h-16 opacity-20" />
+                      <span className="text-[11px] font-black uppercase tracking-widest opacity-40">Select_a_Project</span>
                     </div>
                   )}
                 </AnimatePresence>
@@ -1132,7 +1108,7 @@ const FileManagerWindow: FC<{
         <div className="h-6 bg-[#c0c0c0] border-t border-zinc-400 flex items-center px-2 justify-between text-[9px] text-zinc-600">
           <div className="flex gap-4">
             <span>{filteredProjects.length} object(s)</span>
-            <span>{selectedFolder}</span>
+            <span>C:\Users\Jolin\Projects\Selected_Featured</span>
           </div>
           <div className="flex items-center gap-1">
             <Monitor className="w-3 h-3" />
@@ -1172,7 +1148,7 @@ const SystemMonitorWindow: FC<{ isOpen: boolean; onClose: () => void }> = ({ isO
         <div className="retro-title-bar !bg-[#008000] flex justify-between items-center">
           <div className="flex items-center gap-2">
             <Activity className="w-3 h-3 text-white" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-white">System_Performance_Monitor</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-white">My_Skill_Proficiency_Monitor</span>
           </div>
           <button onClick={onClose} className="retro-panel px-2 py-0.5 text-[10px] font-bold hover:bg-zinc-300 active:bg-zinc-400">X</button>
         </div>
@@ -1182,7 +1158,7 @@ const SystemMonitorWindow: FC<{ isOpen: boolean; onClose: () => void }> = ({ isO
             {/* Process Usage */}
             <div className="space-y-4">
               <div className="flex justify-between items-center border-b border-zinc-400 pb-1">
-                <span className="text-[10px] font-bold uppercase">Brain_Process_Usage</span>
+                <span className="text-[10px] font-bold uppercase">Skill_Mastery_Level</span>
                 <span className="text-[10px] font-mono text-green-700">CPU: 98%</span>
               </div>
               <div className="space-y-3">
@@ -1348,7 +1324,7 @@ const PortalIntro = ({
   
   const bootSequences = [
     "System: Jolin_Hsu_Portfolio initialized.",
-    "Status: Freshman / EECS Student.",
+    "Status: Freshman / 佛光 資訊應用系",
     "Goal: Reaching 4.3 GPA... OK.",
     "PRESS START TO ENTER REALITY_"
   ];
@@ -1478,13 +1454,13 @@ const PortalIntro = ({
             >
               <div className="w-[400px] h-[300px] relative">
                 <img 
-                  src="https://picsum.photos/seed/retro-pc/800/600" 
+                  src="https://i.ibb.co/Ygyf75Q/pngtree-retro-crt-computer-monitor-on-a-plain-white-background-representing-old-image-20856979-remov.png" 
                   alt="Retro PC" 
                   className="w-full h-full object-contain filter drop-shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
                   referrerPolicy="no-referrer"
                 />
                 
-                <div className="absolute top-[22%] left-[28%] w-[44%] h-[42%] bg-black/95 overflow-hidden">
+                <div className="absolute top-[35%] left-[35%] w-[30%] h-[30%] bg-black/95 overflow-hidden rounded-[10%]">
                   <div className="scanline" />
                   <div className="scanline-move" />
                   <div className="absolute inset-0 flex items-center justify-center flex-col gap-2">
@@ -1554,7 +1530,7 @@ const PortalIntro = ({
             >
                <div className="relative w-full h-full">
                  <img 
-                  src="https://picsum.photos/seed/retro-pc/800/600" 
+                  src="https://i.ibb.co/Ygyf75Q/pngtree-retro-crt-computer-monitor-on-a-plain-white-background-representing-old-image-20856979-remov.png" 
                   alt="Retro PC" 
                   className="w-full h-full object-contain"
                   referrerPolicy="no-referrer"
@@ -1563,7 +1539,7 @@ const PortalIntro = ({
                 <motion.div 
                   animate={{ scale: [1, 2] }}
                   transition={{ duration: 1.5, ease: "easeIn" }}
-                  className="absolute top-[22%] left-[28%] w-[44%] h-[42%] bg-accent/20 border border-accent/50"
+                  className="absolute top-[35%] left-[35%] w-[30%] h-[30%] bg-accent/20 border border-accent/50 rounded-[10%]"
                 />
                </div>
             </motion.div>
@@ -1582,6 +1558,7 @@ const ProjectDetail: FC<{ project: typeof PROJECTS[0] | null; onClose: () => voi
   return (
     <AnimatePresence>
       <motion.div 
+        layoutId={project ? `project-${project.id}` : undefined}
         initial={{ opacity: 0, scale: 0.95 }} 
         animate={{ opacity: 1, scale: 1 }} 
         exit={{ opacity: 0, scale: 0.95 }}
@@ -1868,36 +1845,27 @@ const StickyNote: FC<{ onGeminiClick: () => void; desktopRef: React.RefObject<HT
         backgroundColor: "#FFFF88",
         boxShadow: "5px 5px 15px rgba(0,0,0,0.2)",
       }}
-      className="absolute z-40 w-56 p-6 cursor-grab active:cursor-grabbing select-none post-it-note"
+      className="absolute z-40 w-80 p-8 cursor-grab active:cursor-grabbing select-none post-it-note"
     >
       {/* Virtual Tape */}
-      <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-8 bg-white/30 backdrop-blur-[1px] rotate-[-1deg] border border-white/20" />
+      <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-20 h-10 bg-white/30 backdrop-blur-[1px] rotate-[-1deg] border border-white/20" />
       
-      <div className="font-hand text-zinc-800 space-y-3">
-        <div className="flex items-center gap-2 border-b border-zinc-400/30 pb-1">
-          <Pin className="w-3 h-3 text-red-500" />
-          <span className="text-sm font-bold">📌 TODO List:</span>
+      <div className="font-hand text-zinc-800 space-y-4">
+        <div className="flex items-center gap-2 border-b border-zinc-400/30 pb-2">
+          <Pin className="w-4 h-4 text-red-500" />
+          <span className="text-base font-bold">📌 網站快速指南:</span>
         </div>
         
-        <ul className="text-xs space-y-2 list-none">
-          <li>
-            - 升級「阿爸的家園」系統
-            <div className="text-[10px] ml-3 text-zinc-600">
-              (<span 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onGeminiClick();
-                }}
-                className="text-blue-600 cursor-pointer hover:text-blue-800 hover:underline decoration-dotted animate-pulse"
-              >Gemini</span> 1.5 Pro 整合完成! ✅)
-            </div>
-          </li>
-          <li>- 調優 MBTI 測驗轉場動畫</li>
-          <li>- 整理專案 Debug 紀錄檔</li>
+        <ul className="text-xs space-y-2 list-none leading-relaxed">
+          <li><span className="font-bold">[About_Me]:</span> 深入了解家羚的成長背景與思維轉變。</li>
+          <li><span className="font-bold">[Digital_Journal]:</span> 記錄了技術開發過程中的點滴與心得。</li>
+          <li><span className="font-bold">[My_Works]:</span> 瀏覽家羚的代表性專案，包含 AI 整合與資安研究。</li>
+          <li><span className="font-bold">[AI_Chat]:</span> 與家羚的「數位雙生」聊天機器人對話。</li>
+          <li><span className="font-bold">[System_Monitor]:</span> 檢視家羚的核心技術指標與技能等級。</li>
         </ul>
 
-        <div className="pt-2 border-t border-zinc-400/30 text-[10px] italic leading-tight">
-          ※ Tip: 雙擊 C:\ 磁碟內的 .log 檔案，可檢視我的開發思維軌跡。
+        <div className="pt-3 border-t border-zinc-400/30 text-[10px] italic leading-tight">
+          ※ 點擊圖示即可開啟對應模組。
         </div>
       </div>
     </motion.div>
@@ -2193,6 +2161,113 @@ const SystemAlertPopup: FC<{
   );
 };
 
+// --- Desktop Pet Component ---
+const DesktopPet = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const contacts = [
+    { label: "GMAIL", value: "comet.jolin@gmail.com", icon: Mail, color: "#EA4335", link: "mailto:comet.jolin@gmail.com" },
+    { label: "GITHUB", value: "@JolinHsu", icon: Github, color: "#333", link: "https://github.com/cometjolin-cmyk" },
+    { label: "YOUTUBE", value: "Comet study (@00765-c)", icon: Video, color: "#FF0000", link: "https://youtube.com/@00765-c" },
+  ];
+
+  return (
+    <div className="fixed bottom-10 left-2 z-[3000] pointer-events-none">
+      {/* 1. 聯絡資訊彈窗 */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: 20, x: -20 }}
+            animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 20 }}
+            className="retro-window w-64 mb-4 pointer-events-auto shadow-2xl ml-4"
+          >
+            <div className="retro-title-bar !bg-[#000080] flex justify-between items-center px-2 py-1">
+              <span className="text-[9px] text-white font-bold uppercase">Uplink_Establish.exe</span>
+              <button onClick={() => setIsOpen(false)} className="retro-panel px-1 text-[10px]">X</button>
+            </div>
+            <div className="p-3 bg-[#c0c0c0] space-y-2">
+              {contacts.map((c) => (
+                <a 
+                  key={c.label} 
+                  href={c.link} 
+                  target="_blank" 
+                  className="flex items-center gap-3 p-2 bg-white/50 border border-zinc-400 hover:bg-white hover:translate-x-1 transition-all group"
+                >
+                  <c.icon className="w-4 h-4" style={{ color: c.color }} />
+                  <div className="flex flex-col">
+                    <span className="text-[8px] font-black text-zinc-500 uppercase">{c.label}</span>
+                    <span className="text-[10px] font-bold text-black">{c.value}</span>
+                  </div>
+                  <ExternalLink className="w-3 h-3 ml-auto opacity-0 group-hover:opacity-100" />
+                </a>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 2. 像素貓本體 */}
+      <div className="relative pointer-events-auto cursor-pointer group">
+        {/* 提示氣泡 */}
+        <AnimatePresence>
+          {isHovered && !isOpen && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="absolute -top-10 left-4 bg-white border-2 border-black px-2 py-1 text-[10px] font-black whitespace-nowrap"
+            >
+              MEOW! (聯絡我?)
+              <div className="absolute -bottom-2 left-4 w-0 h-0 border-t-[8px] border-t-black border-x-[6px] border-x-transparent" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <motion.div
+          onHoverStart={() => setIsHovered(true)}
+          onHoverEnd={() => setIsHovered(false)}
+          onClick={() => setIsOpen(!isOpen)}
+          animate={{ 
+            y: isHovered ? -10 : [0, -2, 0],
+            scaleY: isHovered ? 1.1 : [1, 1.02, 1],
+          }}
+          transition={{ 
+            y: { duration: isHovered ? 0.2 : 3, repeat: isHovered ? 0 : Infinity, ease: "easeInOut" },
+            scaleY: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+          }}
+          className="relative w-[120px] h-[120px] flex items-center justify-center"
+        >
+          <div className="relative">
+             <img 
+               src="https://i.ibb.co/b9m9gwX/Gemini-Generated-Image-hx6yyohx6yyohx6y-removebg-preview.png"
+               className={`w-[120px] h-[120px] object-contain transition-all duration-300 ${isHovered ? 'brightness-110 scale-[1.8]' : 'brightness-100 scale-[1.6]'}`}
+               alt="Pet Cat"
+               referrerPolicy="no-referrer"
+             />
+             
+             {/* Blinking Effect */}
+             <motion.div 
+               animate={{ opacity: [0, 0, 1, 0, 0] }}
+               transition={{ duration: 4, repeat: Infinity, times: [0, 0.9, 0.92, 0.94, 1] }}
+               className="absolute top-[35%] left-[30%] w-[40%] h-[5%] bg-black/20 rounded-full blur-[1px]"
+             />
+
+             {/* 浮動的電話圖示 */}
+             <motion.div 
+               animate={{ y: [0, -5, 0], rotate: [0, 10, -10, 0] }}
+               transition={{ duration: 2, repeat: Infinity }}
+               className="absolute -top-1 -right-1 bg-accent p-1 border border-black shadow-[2px_2px_0_black]"
+             >
+               <Phone className="w-3 h-3 text-black" />
+             </motion.div>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
 export default function App() {
   const desktopRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<"boot" | "miniature" | "zooming" | "desktop">("boot");
@@ -2206,6 +2281,7 @@ export default function App() {
   const [isJournalOpen, setIsJournalOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [notepad, setNotepad] = useState<{ title: string; content: string; isOpen: boolean } | null>(null);
   const [highlightedIcon, setHighlightedIcon] = useState<string | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [opLogs, setOpLogs] = useState<string[]>(["System initialized.", "Kernel loaded."]);
@@ -2213,7 +2289,7 @@ export default function App() {
     { 
       role: "bot", 
       content: "我是家羚的數位雙生，你想先了解她的：",
-      options: ["1. 許家羚的故事", "2. 創作作品", "3. 系統效能監測 (System Monitor)"]
+      options: ["1. 許家羚的故事", "2. 創作作品", "3. 關於我的技能 (My Skills)"]
     }
   ]);
   const [input, setInput] = useState("");
@@ -2277,8 +2353,8 @@ export default function App() {
       return;
     }
 
-    if (userMsg.includes("3. 系統效能監測 (System Monitor)")) {
-      setOpLogs(prev => [...prev, "User selected 'Performance'. Launching Identity_Properties.dll..."]);
+    if (userMsg.includes("3. 關於我的技能")) {
+      setOpLogs(prev => [...prev, "User selected 'Skills'. Launching Identity_Properties.dll..."]);
       setIsChatOpen(false);
       setTimeout(() => {
         setIsAboutOpen(true);
@@ -2387,7 +2463,7 @@ export default function App() {
               setMessages(prev => [...prev, { 
                 role: "bot", 
                 content: "看完這些作品後，你或許會對家羚的邏輯世界 (故事) 好奇，或者想直接確認她的系統參數 (技能)？",
-                options: ["1. 許家羚的故事", "3. 系統效能監測 (System Monitor)"]
+                options: ["1. 許家羚的故事", "3. 關於我的技能 (My Skills)"]
               }]);
               setIsChatOpen(true);
             }} 
@@ -2398,6 +2474,8 @@ export default function App() {
             onClose={() => {
               setIsAboutOpen(false);
               setIsChatOpen(true);
+              // Reset notepad if it was open from here
+              setNotepad(null);
             }} 
           />
           <SystemMonitorWindow
@@ -2438,6 +2516,8 @@ export default function App() {
         </AnimatePresence>
 
         <OperationLogWindow logs={opLogs} />
+
+        {status === 'desktop' && <DesktopPet />}
 
         {/* Taskbar */}
         <div className="fixed bottom-0 left-0 right-0 h-10 retro-panel flex items-center px-2 gap-2 z-50">

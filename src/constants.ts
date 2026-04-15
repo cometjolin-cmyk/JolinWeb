@@ -48,7 +48,7 @@ export const PROJECTS = [
     outcome: "Boutique aesthetic meets AI-driven personalization.",
     tags: ["AI Integration", "Bento UI", "E-commerce"],
     image: "https://picsum.photos/seed/healthy-food/1200/800?grayscale",
-    video: "https://youtu.be/iPxUFb2UwS8?si=3y8ino6k5XngVD--",
+    video: "https://youtu.be/iPxUFb2UwS8?si=8gOhBqHJSnTeucWw",
     link: "https://dusky-delta.vercel.app",
     status: "Completed / Stable",
     core: "AI 營養助手 + Bento UI",
@@ -76,7 +76,7 @@ export const PROJECTS = [
     status: "Stable",
     core: "Dynamic Transitions + Vercel",
     gallery: [
-      "https://i.ibb.co/vxMfwWhr/2026-04-15-11-02-11.png",
+      "https://picsum.photos/seed/mbti-1/800/600?grayscale",
       "https://picsum.photos/seed/mbti-2/800/600?grayscale"
     ]
   },

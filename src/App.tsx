@@ -75,6 +75,7 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PERSONAL_INFO, ABOUT_ME, PROJECTS, CHATBOT_INFO } from "./constants";
 import { GoogleGenAI } from "@google/genai";
+import { soundManager } from "./services/soundService";
 
 // --- AI Chatbot Logic ---
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
@@ -1413,14 +1414,20 @@ const PortalIntro = ({
                 className="pt-16 flex flex-col items-center gap-8"
               >
                 <button 
-                  onClick={() => setStatus("miniature")}
+                  onClick={() => {
+                    soundManager.play("startup"); // Keep startup as it's a specific sound
+                    setStatus("miniature");
+                  }}
                   className="retro-btn"
                 >
                   [ START ]
                 </button>
                 
                 <button 
-                  onClick={triggerDegauss}
+                  onClick={() => {
+                    soundManager.play("notify"); // Specific sound
+                    triggerDegauss();
+                  }}
                   className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-white/40 hover:text-white transition-colors"
                 >
                   <Power className="w-3 h-3" />
@@ -1709,6 +1716,15 @@ const ChatWindow: FC<{
   onSend: (customMsg?: string) => void;
   isTyping: boolean;
 }> = ({ isOpen, onClose, messages, input, setInput, onSend, isTyping }) => {
+  useEffect(() => {
+    if (isTyping && isOpen) {
+      soundManager.play("typing", 0.3);
+    } else {
+      soundManager.stop("typing");
+    }
+    return () => soundManager.stop("typing");
+  }, [isTyping, isOpen]);
+
   if (!isOpen) return null;
   return (
     <motion.div 
@@ -2295,11 +2311,47 @@ export default function App() {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
 
+  // --- Global Click Sound Listener ---
+  useEffect(() => {
+    const handleGlobalClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      // Check if the clicked element or its parent is interactive
+      const isInteractive = target.closest('button') || 
+                           target.closest('a') || 
+                           target.closest('[role="button"]') ||
+                           target.closest('.cursor-pointer') ||
+                           target.closest('.retro-btn') ||
+                           target.closest('.retro-panel');
+
+      if (isInteractive) {
+        soundManager.play("vintage_click");
+      }
+    };
+
+    window.addEventListener('click', handleGlobalClick);
+    return () => window.removeEventListener('click', handleGlobalClick);
+  }, []);
+
   useEffect(() => {
     if (status === 'desktop') {
       setIsChatOpen(true);
     }
   }, [status]);
+
+  // --- Sound Effects Integration ---
+  useEffect(() => {
+    if (isGalleryOpen || isAboutOpen || isMonitorOpen || isJournalOpen || isChatOpen || notepad?.isOpen) {
+      soundManager.play("open");
+    } else {
+      soundManager.play("close");
+    }
+  }, [isGalleryOpen, isAboutOpen, isMonitorOpen, isJournalOpen, isChatOpen, notepad?.isOpen]);
+
+  useEffect(() => {
+    if (isAlertOpen) {
+      soundManager.play("error");
+    }
+  }, [isAlertOpen]);
 
   useEffect(() => {
     if (status !== 'desktop') {
@@ -2521,7 +2573,10 @@ export default function App() {
 
         {/* Taskbar */}
         <div className="fixed bottom-0 left-0 right-0 h-10 retro-panel flex items-center px-2 gap-2 z-50">
-          <button className="retro-btn h-7 px-4 flex items-center gap-2 !text-[12px] font-bold">
+          <button 
+            onClick={() => {}} // Global listener will handle click sound
+            className="retro-btn h-7 px-4 flex items-center gap-2 !text-[12px] font-bold"
+          >
             <div className="w-4 h-4 bg-accent rounded-sm" />
             START
           </button>
@@ -2529,7 +2584,10 @@ export default function App() {
           <div className="h-7 w-[1px] bg-zinc-400 mx-1" />
           
           <button 
-            onClick={triggerDegauss}
+            onClick={() => {
+              soundManager.play("notify");
+              triggerDegauss();
+            }}
             className="retro-btn h-7 px-3 flex items-center gap-2 !text-[10px] font-bold"
           >
             <Power className="w-3 h-3" />

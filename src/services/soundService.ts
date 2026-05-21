@@ -1,51 +1,71 @@
 
 const SOUND_URLS = {
-  startup: "https://actions.google.com/sounds/v1/science_fiction/glitchy_digital_interface.ogg",
-  click: "https://actions.google.com/sounds/v1/ui/click_on_pushed_button.ogg", // Refined later
-  vintage_click: "https://actions.google.com/sounds/v1/office/typing_mechanical.ogg", // Will be played shortly
-  open: "https://actions.google.com/sounds/v1/ui/pop_up_selection.ogg",
-  close: "https://actions.google.com/sounds/v1/ui/select_standard.ogg",
-  error: "https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg",
-  notify: "https://actions.google.com/sounds/v1/ui/notification_glitch.ogg",
-  typing: "https://actions.google.com/sounds/v1/office/keyboard_typing_fast.ogg",
+  // Using more reliable CDN links for mechanical/interface sounds
+  startup: "https://rpg.hamsterrepublic.com/ohrrpgce/sounds/Glitch.wav",
+  click: "https://rpg.hamsterrepublic.com/ohrrpgce/sounds/Menu_Unselect.wav",
+  vintage_click: "https://rpg.hamsterrepublic.com/ohrrpgce/sounds/Click1.wav", 
+  open: "https://rpg.hamsterrepublic.com/ohrrpgce/sounds/Button1.wav",
+  close: "https://rpg.hamsterrepublic.com/ohrrpgce/sounds/Close1.wav",
+  error: "https://rpg.hamsterrepublic.com/ohrrpgce/sounds/Error.wav",
+  notify: "https://rpg.hamsterrepublic.com/ohrrpgce/sounds/Message1.wav",
+  typing: "https://rpg.hamsterrepublic.com/ohrrpgce/sounds/Select1.wav",
 };
 
 class SoundService {
   private sounds: Record<string, HTMLAudioElement> = {};
   private isEnabled: boolean = true;
+  private isUnlocked: boolean = false;
 
   constructor() {
     if (typeof window !== 'undefined') {
-      Object.entries(SOUND_URLS).forEach(([key, url]) => {
-        this.sounds[key] = new Audio(url);
-        this.sounds[key].load();
-      });
-      
-      // Fine-tune the vintage click (mechanical keyboard sound)
-      // Since typing_mechanical is long, we can use it but stop it early
-      // or just use a sharper hit.
+      this.init();
     }
   }
 
-  play(soundName: keyof typeof SOUND_URLS, volume: number = 0.5) {
+  private init() {
+    Object.entries(SOUND_URLS).forEach(([key, url]) => {
+      try {
+        const audio = new Audio();
+        audio.src = url;
+        audio.preload = "auto";
+        audio.crossOrigin = "anonymous";
+        this.sounds[key] = audio;
+      } catch (e) {
+        console.error(`Failed to load sound: ${key}`, e);
+      }
+    });
+
+    const unlock = () => {
+      this.isUnlocked = true;
+      // Force test play on unlock to ensure browser registers interaction
+      this.play("click", 0.1); 
+      window.removeEventListener('click', unlock);
+      window.removeEventListener('keydown', unlock);
+    };
+    window.addEventListener('click', unlock);
+    window.addEventListener('keydown', unlock);
+  }
+
+  play(soundName: keyof typeof SOUND_URLS, volume: number = 0.4) {
     if (!this.isEnabled || !this.sounds[soundName]) return;
     
     const sound = this.sounds[soundName];
-    sound.volume = volume;
     
-    if (soundName === 'vintage_click' || soundName === 'click') {
-      // For old computer feel, we want a very short sharp sound
+    // Create a clone to allow rapid overlapping sounds (like fast typing)
+    try {
+      const playInstance = sound.cloneNode() as HTMLAudioElement;
+      playInstance.volume = volume;
+      playInstance.play().catch(e => {
+        // Only log if it's not a standard interaction block
+        if (e.name !== 'NotAllowedError') {
+          console.warn(`Audio play failed for ${soundName}:`, e);
+        }
+      });
+    } catch (e) {
+      // Fallback to original if cloning fails
       sound.currentTime = 0;
-      sound.play().catch(e => console.warn("Audio play blocked:", e));
-      // Auto-stop long sounds for key press feel
-      if (soundName === 'vintage_click') {
-        setTimeout(() => {
-          if (!sound.paused) sound.pause();
-        }, 100); 
-      }
-    } else {
-      sound.currentTime = 0;
-      sound.play().catch(e => console.warn("Audio play blocked:", e));
+      sound.volume = volume;
+      sound.play().catch(() => {});
     }
   }
 
@@ -56,8 +76,13 @@ class SoundService {
     }
   }
 
-  toggle(enabled: boolean) {
-    this.isEnabled = enabled;
+  toggle() {
+    this.isEnabled = !this.isEnabled;
+    return this.isEnabled;
+  }
+
+  get status() {
+    return this.isEnabled;
   }
 }
 

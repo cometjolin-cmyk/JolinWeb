@@ -11,6 +11,7 @@ import {
   MessageSquare, 
   ExternalLink, 
   ChevronRight, 
+  ChevronLeft,
   Send, 
   User, 
   Bot,
@@ -22,6 +23,7 @@ import {
   Linkedin,
   Mail,
   Monitor,
+  Info,
   Power,
   Phone,
   Crosshair,
@@ -52,7 +54,11 @@ import {
   BookOpen,
   Gamepad2,
   Brain,
-  Video
+  Video,
+  Volume2,
+  VolumeX,
+  Disc,
+  FileArchive,
 } from "lucide-react";
 import { 
   BarChart, 
@@ -353,23 +359,107 @@ const InteractiveBio: FC = () => {
   );
 };
 
+const FileIcon: FC<{ label: string; type: 'sys' | 'exe' }> = ({ label, type }) => (
+  <div className="flex flex-col items-center gap-1 p-2 hover:bg-white/10 rounded cursor-pointer group transition-colors">
+    {type === 'sys' ? (
+      <Settings className="w-8 h-8 text-zinc-500 group-hover:text-blue-500 transition-colors" />
+    ) : (
+      <FileCode className="w-8 h-8 text-zinc-500 group-hover:text-green-500 transition-colors" />
+    )}
+    <span className="text-[7px] font-mono text-zinc-600 text-center break-all leading-tight">{label}</span>
+  </div>
+);
+
+const CertificateCarousel: FC = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const certificates = [
+    { label: "APCS_Cert.sys", type: "sys", date: "2024.03", detail: "Level 4: Advanced Programming Concepts" },
+    { label: "Volunteer_Log.exe", type: "exe", date: "2023.12", detail: "Community Tech Leadership Program" },
+    { label: "Security_Shield.sys", type: "sys", date: "2024.01", detail: "System Vulnerability Research Certificate" }
+  ];
+
+  const next = () => setCurrentIndex((prev) => (prev + 1) % certificates.length);
+  const prev = () => setCurrentIndex((prev) => (prev - 1 + certificates.length) % certificates.length);
+
+  return (
+    <div className="relative group">
+       <div className="retro-inset bg-white px-4 py-6 min-h-[160px] flex flex-col items-center justify-center overflow-hidden relative shadow-[inset_0_2px_10px_rgba(0,0,0,0.1)]">
+          <AnimatePresence mode="wait">
+             <motion.div 
+               key={currentIndex}
+               initial={{ opacity: 0, x: 20 }}
+               animate={{ opacity: 1, x: 0 }}
+               exit={{ opacity: 0, x: -20 }}
+               transition={{ duration: 0.2 }}
+               className="w-full flex flex-col items-center text-center space-y-4"
+             >
+                <div className="bg-zinc-100/50 p-4 retro-panel border-white/50 w-24 aspect-square flex items-center justify-center group-hover:scale-105 transition-transform duration-500">
+                   {certificates[currentIndex].type === 'sys' ? (
+                     <Settings className="w-12 h-12 text-blue-600/80" />
+                   ) : (
+                     <FileCode className="w-12 h-12 text-green-600/80" />
+                   )}
+                </div>
+                <div className="space-y-1">
+                   <div className="text-[11px] font-black font-mono text-zinc-800 tracking-tight">{certificates[currentIndex].label}</div>
+                   <div className="text-[8px] font-mono text-zinc-500 uppercase font-bold">
+                     [{certificates[currentIndex].date}] — {certificates[currentIndex].detail}
+                   </div>
+                </div>
+             </motion.div>
+          </AnimatePresence>
+
+          {/* Navigation Arrows */}
+          <button 
+            onClick={prev}
+            className="absolute left-1 top-1/2 -translate-y-1/2 p-2 text-zinc-300 hover:text-blue-600 transition-colors z-10"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button 
+            onClick={next}
+            className="absolute right-1 top-1/2 -translate-y-1/2 p-2 text-zinc-300 hover:text-blue-600 transition-colors z-10"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+
+          {/* Dots Indicator */}
+          <div className="absolute bottom-3 flex gap-1.5 items-center">
+            {certificates.map((_, i) => (
+              <motion.div 
+                key={i} 
+                animate={{ 
+                  scale: i === currentIndex ? 1.2 : 1,
+                  backgroundColor: i === currentIndex ? "#2563eb" : "#d4d4d8"
+                }}
+                className={`w-1.5 h-1.5 rounded-full transition-colors cursor-pointer`}
+                onClick={() => setCurrentIndex(i)}
+              />
+            ))}
+          </div>
+       </div>
+
+       <div className="mt-3 flex items-center justify-between px-2 font-mono text-[9px]">
+          <div className="flex items-center gap-2 text-zinc-500">
+            <span className="w-1 h-1 bg-green-500 rounded-full animate-pulse" />
+            <span>[ROOT] Access Granted...</span>
+          </div>
+          <div className="text-zinc-400 italic">Jolin_Cert_Repo_v1.0</div>
+       </div>
+    </div>
+  );
+};
+
 const SkillBar: FC<{ 
   label: string; 
   value: number; 
   delay: number; 
   isHighlighted?: boolean;
   hasShockwave?: boolean;
-}> = ({ label, value, delay, isHighlighted, hasShockwave }) => {
-  const [currentValue, setCurrentValue] = useState(0);
+  color?: string;
+}> = ({ label, value, delay, isHighlighted, hasShockwave, color = "#FFD700" }) => {
+  const [currentValue] = useState(value);
   
-  useEffect(() => {
-    if (isHighlighted) {
-      setCurrentValue(value);
-    } else {
-      setCurrentValue(0);
-    }
-  }, [value, isHighlighted]);
-
   return (
     <motion.div 
       animate={hasShockwave ? { 
@@ -378,7 +468,6 @@ const SkillBar: FC<{
       } : {}}
       className="space-y-1 relative"
     >
-      {/* Golden Shockwave Effect */}
       <AnimatePresence>
         {hasShockwave && (
           <motion.div 
@@ -390,23 +479,28 @@ const SkillBar: FC<{
         )}
       </AnimatePresence>
 
-      <div className="flex justify-between text-[10px] font-mono font-bold uppercase tracking-tight relative z-10">
-        <span className="text-black/60">{label}</span>
+      <div className="flex justify-between text-[8px] font-mono font-bold uppercase tracking-tight relative z-10">
+        <span className="text-black/80">{label}</span>
         <motion.span 
-          animate={hasShockwave ? { color: ["#000", "#FFD700", "#000"] } : {}}
-          className={`${isHighlighted ? "text-accent brightness-150" : "text-zinc-400"} font-black transition-colors duration-300`}
+          animate={hasShockwave ? { color: ["#000", color, "#000"] } : {}}
+          className={`${isHighlighted ? "brightness-125" : "text-zinc-500"} font-black transition-colors duration-300`}
+          style={{ color: isHighlighted ? color : undefined }}
         >
-          [{currentValue}]
+          [{isHighlighted ? value : 0}]
         </motion.span>
       </div>
-      <div className="h-2 bg-zinc-800/20 retro-inset overflow-hidden relative z-10">
+      <div className="h-1.5 bg-zinc-800/20 retro-inset overflow-hidden relative z-10">
         <motion.div 
           initial={{ width: 0 }}
-          animate={{ width: `${(currentValue / 150) * 100}%` }}
+          animate={{ width: isHighlighted ? `${(value / 150) * 100}%` : 0 }}
           transition={{ duration: 1.5, ease: "easeOut" }}
-          className={`h-full relative ${isHighlighted ? "bg-accent shadow-[0_0_15px_rgba(255,215,0,0.8)] saturate-150" : "bg-zinc-400 opacity-30"}`}
+          className="h-full relative transition-colors duration-300"
+          style={{ 
+            backgroundColor: isHighlighted ? color : "#9ca3af",
+            opacity: isHighlighted ? 1 : 0.3,
+            boxShadow: isHighlighted ? `0 0 10px ${color}` : "none"
+          }}
         >
-          {/* Pulse Effect */}
           {isHighlighted && (
             <motion.div 
               animate={{ x: ["-100%", "1000%"] }}
@@ -420,49 +514,102 @@ const SkillBar: FC<{
   );
 };
 
+const CircularGauge: FC<{ label: string; sub: string; progress: number; color: string }> = ({ label, sub, progress, color }) => {
+  const radius = 24;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (progress / 100) * circumference;
+
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <div className="relative w-16 h-16 flex items-center justify-center">
+        <svg className="w-full h-full -rotate-90">
+          <circle
+            cx="32"
+            cy="32"
+            r={radius}
+            fill="transparent"
+            stroke="rgba(0,0,0,0.1)"
+            strokeWidth="4"
+          />
+          <motion.circle
+            cx="32"
+            cy="32"
+            r={radius}
+            fill="transparent"
+            stroke={color}
+            strokeWidth="4"
+            strokeDasharray={circumference}
+            initial={{ strokeDashoffset: circumference }}
+            animate={{ strokeDashoffset }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+            strokeLinecap="round"
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-[10px] font-black">{progress}%</span>
+        </div>
+      </div>
+      <div className="text-center">
+        <div className="text-[8px] font-black uppercase tracking-widest">{label}</div>
+        <div className="text-[7px] font-bold text-zinc-500">{sub}</div>
+      </div>
+    </div>
+  );
+};
+
 const AvatarCard: FC = () => {
   return (
-    <div className="relative w-full aspect-[3/4] retro-window bg-zinc-900 overflow-hidden group">
-      {/* Pentominoes Background */}
-      <div className="absolute inset-0 opacity-10 pointer-events-none">
-        <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <pattern id="pentomino" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
-            <path d="M0 0h5v5H0zM5 5h5v5H5z" fill="currentColor" className="text-accent" />
-          </pattern>
-          <rect width="100%" height="100%" fill="url(#pentomino)" />
-        </svg>
+    <div className="space-y-4">
+      <div className="relative w-full aspect-[3/4] retro-window bg-zinc-900 overflow-hidden group">
+        {/* Pentominoes Background */}
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <pattern id="pentomino" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
+              <path d="M0 0h5v5H0zM5 5h5v5H5z" fill="currentColor" className="text-accent" />
+            </pattern>
+            <rect width="100%" height="100%" fill="url(#pentomino)" />
+          </svg>
+        </div>
+        
+        {/* CRT Effects */}
+        <div className="absolute inset-0 scanline opacity-30 z-20 pointer-events-none" />
+        <div className="absolute inset-0 scanline-move opacity-20 z-20 pointer-events-none" />
+        
+        {/* Nameplate */}
+        <div className="absolute top-2 left-2 right-2 z-30">
+          <div className="bg-[#000080] border border-white/30 px-2 py-1 shadow-[2px_2px_0_black]">
+            <span className="text-white font-bold text-[9px] uppercase tracking-widest">[ IDENTITY_LOG ]</span>
+          </div>
+        </div>
+
+        {/* Avatar Image */}
+        <div className="absolute inset-0 flex items-center justify-center p-4 bg-zinc-800/50">
+          <img 
+            src="https://i.ibb.co/zHjY8rG3/Gemini-Generated-Image-bfn4lbbfn4lbbfn4.png" 
+            alt="Avatar" 
+            className="w-full h-full object-contain pixelated opacity-90 group-hover:opacity-100 transition-opacity drop-shadow-[0_0_20px_rgba(255,215,0,0.4)]"
+            referrerPolicy="no-referrer"
+          />
+        </div>
+
+        {/* Status Display Overlay */}
+        <div className="absolute bottom-0 left-0 right-0 bg-[#000080]/90 p-2 space-y-0.5 z-30">
+          <div className="flex justify-between items-center">
+            <span className="text-[8px] font-black text-white uppercase tracking-tighter">STATUS: ONLINE</span>
+            <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,1)]" />
+          </div>
+          <div className="text-[7px] font-bold text-white/70 uppercase truncate">
+            LOC: FO GUANG UNIVERSITY
+          </div>
+        </div>
       </div>
       
-      {/* CRT Effects */}
-      <div className="absolute inset-0 scanline opacity-30 z-20 pointer-events-none" />
-      <div className="absolute inset-0 scanline-move opacity-20 z-20 pointer-events-none" />
-      
-      {/* Nameplate */}
-      <div className="absolute top-2 left-2 right-2 z-30">
-        <div className="bg-[#000080] border border-white/30 px-2 py-1 shadow-[2px_2px_0_black]">
-          <span className="text-white font-bold text-[9px] uppercase tracking-widest">[ 資訊專業學生 ]</span>
-        </div>
-      </div>
-
-      {/* Avatar Image */}
-      <div className="absolute inset-0 flex items-center justify-center p-4 bg-zinc-800/50">
-        <img 
-          src="https://i.ibb.co/zHjY8rG3/Gemini-Generated-Image-bfn4lbbfn4lbbfn4.png" 
-          alt="Avatar" 
-          className="w-full h-full object-contain pixelated opacity-90 group-hover:opacity-100 transition-opacity drop-shadow-[0_0_20px_rgba(255,215,0,0.4)]"
-          referrerPolicy="no-referrer"
-        />
-      </div>
-
-      {/* Status Display */}
-      <div className="absolute bottom-0 left-0 right-0 bg-[#000080]/90 p-2 space-y-0.5">
-        <div className="flex justify-between items-center">
-          <span className="text-[8px] font-black text-white uppercase">STATUS: ONLINE</span>
-          <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
-        </div>
-        <div className="text-[7px] font-bold text-white/70 uppercase truncate">
-          LOC: Fo Guang University
-        </div>
+      {/* Name Quote */}
+      <div className="text-center">
+        <div className="text-xs font-black text-zinc-800 mb-1">許家羚 CHIA-LING HSU</div>
+        <p className="text-[10px] font-light italic text-zinc-500 leading-tight">
+          "System logic is my language,<br />and puzzles are my fuel."
+        </p>
       </div>
     </div>
   );
@@ -688,11 +835,14 @@ const IdentityPropertiesWindow: FC<{ isOpen: boolean; onClose: () => void }> = (
   
   if (!isOpen) return null;
 
-  const skills = [
-    { label: "Python", value: 128, id: 'Python' },
-    { label: "Unity", value: 115, id: 'Unity' },
-    { label: "AI / Gemini", value: 120, id: 'AI' },
-    { label: "After Effects", value: 110, id: 'AE' },
+  const programmingSkills = [
+    { label: "Python", value: 145, id: 'Python', color: '#00ffff' },
+    { label: "C# (Unity 驅動核心 / Unity Engine Drive)", value: 132, id: 'Unity', color: '#00ffff' },
+  ];
+
+  const visualSkills = [
+    { label: "Adobe AI (設計核心 / Vector Graphics Design Core)", value: 138, id: 'AI_Adobe', color: '#4ade80' },
+    { label: "After Effects", value: 125, id: 'AE', color: '#CF96FD' },
   ];
 
   const handleInsert = (id: string) => {
@@ -827,64 +977,134 @@ const IdentityPropertiesWindow: FC<{ isOpen: boolean; onClose: () => void }> = (
               </div>
 
               {/* Middle: Stats */}
-              <div className="lg:col-span-5 space-y-6">
-                <div className="space-y-1">
-                  <h3 className="text-xs font-black text-black uppercase tracking-widest">JolinOS Performance Log:</h3>
-                  <p className="text-[10px] font-mono text-blue-800 font-bold">( LV. NEXT -{'>'} 80% to Success )</p>
-                </div>
+              <div className="lg:col-span-5 space-y-8">
                 <div className="space-y-4">
-                  {skills.map((skill, i) => (
-                    <SkillBar 
-                      key={skill.label} 
-                      {...skill} 
-                      delay={0.2 + i * 0.1} 
-                      isHighlighted={installedSkills.includes(skill.id)}
-                      hasShockwave={shockwaveSkill === skill.id}
-                    />
-                  ))}
+                  <div className="flex items-center gap-2 border-b border-black/10 pb-1">
+                    <Terminal className="w-3 h-3 text-blue-600" />
+                    <span className="text-[10px] font-black uppercase text-zinc-600">程式開發 (Programming Core)</span>
+                  </div>
+                  <div className="space-y-3">
+                    {programmingSkills.map((skill, i) => (
+                      <SkillBar 
+                        key={skill.id} 
+                        {...skill} 
+                        delay={0.2 + i * 0.1} 
+                        isHighlighted={installedSkills.includes(skill.id)}
+                        hasShockwave={shockwaveSkill === skill.id}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 border-b border-black/10 pb-1">
+                    <Monitor className="w-3 h-3 text-green-600" />
+                    <span className="text-[10px] font-black uppercase text-zinc-600">視覺設計 (Visual Core)</span>
+                  </div>
+                  <div className="space-y-3">
+                    {visualSkills.map((skill, i) => (
+                      <SkillBar 
+                        key={skill.id} 
+                        {...skill} 
+                        delay={0.4 + i * 0.1} 
+                        isHighlighted={installedSkills.includes(skill.id) || skill.id === 'AI_Adobe'}
+                        hasShockwave={shockwaveSkill === skill.id}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              {/* Right: Traits & Persona */}
+              {/* Right: Targets & Certs */}
               <div className="lg:col-span-4 space-y-8">
-                <div className="space-y-4">
+                {/* Certifications */}
+                <div className="space-y-3">
                   <div className="flex items-center gap-2 border-b border-black/10 pb-2">
-                    <Cpu className="w-4 h-4 text-zinc-600" />
-                    <span className="text-xs font-black uppercase tracking-widest text-zinc-600">邏輯驅動內核 1.5</span>
+                    <Shield className="w-3 h-3 text-zinc-600" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Certification Log</span>
                   </div>
-                  <div className="retro-inset bg-zinc-900 p-4 font-mono text-sm text-accent italic leading-relaxed shadow-[inset_0_0_20px_rgba(255,215,0,0.1)]">
-                    "System logic is my language,<br />
-                    and puzzles are my fuel."
+                  <div className="flex flex-wrap gap-2">
+                    <div className="retro-panel bg-white px-2 py-1 flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                      <span className="text-[9px] font-bold">APCS_CERTIFIED_2024</span>
+                    </div>
+                    <div className="retro-panel bg-white px-2 py-1 flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
+                      <span className="text-[9px] font-bold">VOLUNTEER_CRED_SHIELD</span>
+                    </div>
                   </div>
                 </div>
 
+                {/* Target Dashboards */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 border-b border-black/10 pb-2">
-                    <Activity className="w-4 h-4 text-zinc-600" />
-                    <span className="text-xs font-black uppercase tracking-widest text-zinc-600">特質標籤</span>
+                    <Activity className="w-3 h-3 text-zinc-600" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Core Target Dashboard</span>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    {["ENTP-A", "資安探索者", "UI/UX 設計", "學霸目標 4.3 GPA"].map(tag => (
-                      <span key={tag} className="retro-badge !bg-blue-100 !text-blue-800 !border-blue-300">[{tag}]</span>
-                    ))}
+                  <div className="grid grid-cols-2 gap-4 retro-inset bg-zinc-50 p-4">
+                    <CircularGauge 
+                      label="GPA Target" 
+                      sub="4.3 Goal" 
+                      progress={93} 
+                      color="#3b82f6" 
+                    />
+                    <CircularGauge 
+                      label="TOEFL Target" 
+                      sub="80-90 Aim" 
+                      progress={85} 
+                      color="#ef4444" 
+                    />
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Bottom: Floppy Drive System */}
-            <div className="mt-12 pt-8 border-t border-black/10 space-y-8">
-              <div className="flex items-center gap-4">
-                <div className="h-[1px] flex-1 bg-zinc-300" />
-                <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-400">Interaction_Core: Drive_A</span>
-                <div className="h-[1px] flex-1 bg-zinc-300" />
+            <div className="mt-12 pt-8 border-t border-black/10 grid md:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <HardDrive className="w-3 h-3 text-zinc-400" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Drive (A:) / Sys_Output</span>
+                </div>
+                
+                <div className="flex items-center gap-6">
+                  {/* Floppy Drive Icon */}
+                  <div className="relative group cursor-pointer">
+                    <Disc className={`w-12 h-12 text-zinc-400 ${installingSkill ? "animate-spin" : ""}`} />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[8px] font-black text-black">3.5"</div>
+                  </div>
+                  
+                  <div className="flex-1 space-y-2">
+                    <div className="flex justify-between items-center text-[9px] font-mono">
+                      <span className="text-blue-600 animate-pulse">Waiting for System Sync... [2/4]</span>
+                      <span className="text-zinc-500">65%</span>
+                    </div>
+                    <div className="h-2 retro-inset bg-zinc-300 overflow-hidden">
+                      <motion.div 
+                        initial={{ width: "20%" }}
+                        animate={{ width: "65%" }}
+                        className="h-full bg-blue-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <FloppyDriveSystem 
+                  onInsert={handleInsert} 
+                  installedSkills={installedSkills} 
+                  isBusy={!!installingSkill} 
+                />
               </div>
 
-              <FloppyDriveSystem 
-                onInsert={handleInsert} 
-                installedSkills={installedSkills} 
-                isBusy={!!installingSkill} 
-              />
+              {/* Files / Logs Area */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <FolderSearch className="w-3 h-3 text-zinc-400" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Certifications & System Logs</span>
+                </div>
+                
+                <CertificateCarousel />
+              </div>
             </div>
           </div>
 
@@ -978,9 +1198,15 @@ const FileManagerWindow: FC<{
                 <button className="retro-panel p-1"><ChevronRight className="w-3 h-3 rotate-180" /></button>
                 <button className="retro-panel p-1"><ChevronRight className="w-3 h-3" /></button>
               </div>
-              <div className="flex-1 retro-inset bg-white px-2 py-0.5 text-[9px] flex items-center gap-2">
-                <HardDrive className="w-3 h-3 text-zinc-400" />
-                <span>C:\Users\Jolin\Projects\Selected_Featured</span>
+              <div className="flex-1 retro-inset bg-white px-2 py-0.5 text-[9px] flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <HardDrive className="w-3 h-3 text-zinc-400" />
+                  <span>C:\Users\Jolin\Projects\Selected_Featured</span>
+                </div>
+                <div className="flex items-center gap-1 text-blue-600 font-bold">
+                  <Info className="w-2.5 h-2.5" />
+                  <span>提示：雙擊作品可以了解更多</span>
+                </div>
               </div>
             </div>
 
@@ -2008,13 +2234,13 @@ const DigitalJournalWindow: FC<{ isOpen: boolean; onClose: () => void }> = ({ is
                         </svg>
                       </div>
                     </div>
-                    <span className="text-[10px] font-mono text-zinc-400 uppercase">Fig 1.1: 思維混亂電路圖</span>
+                    <span className="text-[10px] font-mono text-zinc-400 uppercase">[ FIG 1.1: 思維混亂電路圖 ]</span>
                   </div>
                 </div>
                 {/* Margin Note */}
                 <div className="absolute -right-40 top-20 w-32 hidden lg:block">
                   <p className="font-hand text-blue-600 text-sm rotate-3">
-                    那時候總覺得腦袋快要溢位了... 😵‍調用
+                    那時候總覺得腦袋快要溢位了... 數據堆疊而不成系統。
                   </p>
                 </div>
               </div>
@@ -2063,33 +2289,86 @@ const DigitalJournalWindow: FC<{ isOpen: boolean; onClose: () => void }> = ({ is
               <div className="space-y-6">
                 <h2 className="text-2xl font-black uppercase tracking-tight flex items-center gap-3 font-sans">
                   <span className="bg-black text-white px-2 py-1 text-sm">ACT III</span>
-                  守護與探索 —— 從資安到真實世界的裂縫
+                  越界與實踐 —— 拒絕被定義的「技術雜食者」
                 </h2>
                 <div className="grid md:grid-cols-2 gap-8 items-start">
                   <div className="space-y-4 text-lg leading-relaxed">
                     <p>
-                      資安是「最極致的邏輯博弈」。
-                      我對系統漏洞的研究，其實是對「秩序」的深層渴望。
+                      我發現我的定位不應被限制在特定的專業領域。身為資訊應用的學生，我對數位世界的每一條路徑都充滿了近乎偏執的探索欲，而多維實踐則是我與世界對話的強悍方式。
                     </p>
                     <p className="font-bold italic border-l-4 border-black pl-4 py-2">
-                      「資安教會我：最安全的系統，源於對脆弱性的最深理解。」
+                      「邊界不應是圍牆，而是通往未知領域的起始線。」
                     </p>
+                    
+                    <div className="retro-inset p-4 bg-zinc-100 font-mono text-xs space-y-2">
+                      <div className="flex items-center gap-2 text-zinc-500 border-b border-zinc-300 pb-1">
+                        <Zap className="w-3 h-3" />
+                        <span>UNLIMITED_EXPLORATION.exe</span>
+                      </div>
+                      <p className="text-zinc-700">
+                        我不習慣等待標準答案，我更擅長「主動獵取」資源。我看見感興趣的面向，直覺反應是立即拆解其結構。這種探索欲轉化為極強的動手能力：在每一學期的循環中，我強制自己完成至少 5 項從零到一的小型專案。
+                      </p>
+                    </div>
                   </div>
                   <div className="space-y-4">
-                    <div className="retro-inset bg-black p-4 h-48 overflow-hidden relative">
+                    <div className="retro-inset bg-black p-4 h-48 overflow-hidden relative flex flex-col justify-end">
                       <div className="absolute inset-0 scanline opacity-20" />
-                      <div className="space-y-1">
-                        {[...Array(10)].map((_, i) => (
-                          <div key={i} className="text-[8px] font-mono text-green-500/50 whitespace-nowrap animate-pulse" style={{ animationDelay: `${i * 0.2}s` }}>
-                            {`[SCANNING] VULNERABILITY_DETECTED_AT_0x${Math.random().toString(16).slice(2, 10).toUpperCase()}... STATUS: PATCHING`}
-                          </div>
-                        ))}
+                      <div className="relative z-10 space-y-2">
+                        <div className="flex items-end gap-1 h-20">
+                          {[60, 85, 40, 95, 70].map((h, i) => (
+                            <motion.div 
+                              key={i}
+                              initial={{ height: 0 }}
+                              whileInView={{ height: `${h}%` }}
+                              className="flex-1 bg-accent/80 border border-accent"
+                            />
+                          ))}
+                        </div>
+                        <div className="text-[8px] font-mono text-accent uppercase flex justify-between">
+                          <span>Python</span>
+                          <span>Web</span>
+                          <span>AI</span>
+                          <span>Security</span>
+                          <span>Creative</span>
+                        </div>
                       </div>
                     </div>
-                    <span className="text-[10px] font-mono text-zinc-400 uppercase">Fig 3.1: 實時系統漏洞掃描模擬</span>
+                    <div className="space-y-2">
+                      <span className="text-[10px] font-mono text-zinc-400 uppercase">[ FIG 3.1: 單學期多維專案產出模型 ]</span>
+                      <p className="text-sm text-zinc-500 italic">
+                        從 Python 腳本到 Unity 互動，每一項產出都是我擴張技術疆域的足跡。
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
+            </section>
+
+            {/* Epilogue */}
+            <section className="relative pt-12 border-t border-zinc-100">
+               <div className="space-y-8">
+                  <div className="text-center space-y-4">
+                    <h2 className="text-3xl font-black uppercase tracking-tighter">EPILOGUE</h2>
+                    <p className="text-xl font-medium">持續進化的觀察者</p>
+                  </div>
+                  
+                  <div className="max-w-2xl mx-auto space-y-6 text-center">
+                    <p className="text-lg">
+                      我不是在學習「如何寫程式」，我是在學習「如何用邏輯建構世界」。
+                    </p>
+                    
+                    <div className="flex flex-wrap justify-center gap-8 py-8 border-y border-zinc-200">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-mono text-zinc-400 uppercase">STATUS</span>
+                        <span className="text-lg font-black font-mono text-green-600">CONSTANT_EVOLVING</span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-mono text-zinc-400 uppercase">OUTPUT_RATE</span>
+                        <span className="text-lg font-black font-mono text-blue-600">5+ PROJECTS / SEMESTER</span>
+                      </div>
+                    </div>
+                  </div>
+               </div>
             </section>
 
             {/* Guestbook */}
@@ -2301,6 +2580,7 @@ export default function App() {
   const [highlightedIcon, setHighlightedIcon] = useState<string | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [opLogs, setOpLogs] = useState<string[]>(["System initialized.", "Kernel loaded."]);
+  const [isSoundEnabled, setIsSoundEnabled] = useState(soundManager.status);
   const [messages, setMessages] = useState<{ role: "user" | "bot"; content: string; options?: string[] }[]>([
     { 
       role: "bot", 
@@ -2406,11 +2686,11 @@ export default function App() {
     }
 
     if (userMsg.includes("3. 關於我的技能")) {
-      setOpLogs(prev => [...prev, "User selected 'Skills'. Launching Identity_Properties.dll..."]);
+      setOpLogs(prev => [...prev, "User selected 'Skills'. Launching System_Monitor.exe..."]);
       setIsChatOpen(false);
       setTimeout(() => {
-        setIsAboutOpen(true);
-        setOpLogs(prev => [...prev, "Identity_Properties.dll active."]);
+        setIsMonitorOpen(true);
+        setOpLogs(prev => [...prev, "System_Monitor.exe active."]);
       }, 800);
       return;
     }
@@ -2434,7 +2714,16 @@ export default function App() {
   return (
     <div 
       onMouseMove={handleMouseMove}
-      className="min-h-screen bg-[#008080] text-foreground font-sans selection:bg-accent selection:text-black overflow-hidden relative"
+      className="min-h-screen text-foreground font-sans selection:bg-accent selection:text-black overflow-hidden relative"
+      style={{
+        backgroundImage: isDark 
+          ? `url('/src/assets/images/dark_bliss_pixel_art_1779096455943.png')`
+          : `url('/src/assets/images/classic_bliss_pixel_art_1779096700904.png')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        imageRendering: 'pixelated'
+      }}
     >
       {/* Degauss Flash Overlay */}
       <AnimatePresence>
@@ -2595,6 +2884,19 @@ export default function App() {
           </button>
 
           <div className="flex-1" />
+          
+          <button 
+            onClick={() => {
+              const newState = soundManager.toggle();
+              setIsSoundEnabled(newState);
+              setOpLogs(prev => [...prev, `Audio System: ${newState ? "ENABLED" : "MUTED"}`]);
+            }}
+            className="retro-inset h-7 px-2 flex items-center justify-center hover:bg-zinc-100 transition-colors"
+            title={isSoundEnabled ? "Mute Sound" : "Unmute Sound"}
+          >
+            {isSoundEnabled ? <Volume2 className="w-3 h-3" /> : <VolumeX className="w-3 h-3 text-red-500" />}
+          </button>
+
           <div className="retro-inset h-7 px-4 flex items-center gap-4">
             <Activity className="w-3 h-3 text-black" />
             <span className="text-[10px] font-bold">{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>

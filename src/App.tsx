@@ -5,6 +5,10 @@
 
 import React, { useState, useRef, useEffect, FC, cloneElement, ReactElement, useMemo } from "react";
 import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView } from "motion/react";
+// @ts-ignore
+import darkBlissPixel from "./assets/images/dark_bliss_pixel_art_1779096455943.png";
+// @ts-ignore
+import classicBlissPixel from "./assets/images/classic_bliss_pixel_art_1779096700904.png";
 import { 
   Shield, 
   Cpu, 
@@ -2717,8 +2721,8 @@ export default function App() {
       className="min-h-screen text-foreground font-sans selection:bg-accent selection:text-black overflow-hidden relative"
       style={{
         backgroundImage: isDark 
-          ? `url('/src/assets/images/dark_bliss_pixel_art_1779096455943.png')`
-          : `url('/src/assets/images/classic_bliss_pixel_art_1779096700904.png')`,
+          ? `url(${darkBlissPixel})`
+          : `url(${classicBlissPixel})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',
